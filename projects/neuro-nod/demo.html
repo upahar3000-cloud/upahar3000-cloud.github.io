@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuro-Nod Elite V7.1 | Production Ready</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CYBERPUNK HUD THEME --- */
+        :root { 
+            --neon-blue: #00f3ff; 
+            --neon-red: #ff2a2a; 
+            --neon-amber: #ffae00; 
+            --glass-bg: rgba(20, 20, 25, 0.90);
+            --panel-border: 1px solid rgba(255, 255, 255, 0.1);
+            --bg-color: #050507;
+        }
+
+        body { 
+            background: var(--bg-color); 
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050507 80%);
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header { margin-top: 30px; text-align: center; z-index: 2; }
+        h1 {
+            font-weight: 800; letter-spacing: 4px; font-size: 2.2rem; margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #666; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+
+        /* --- LAYOUT --- */
+        #ui-wrapper { 
+            display: flex; gap: 30px; padding: 30px; 
+            max-width: 1400px; width: 90%;
+            flex-wrap: wrap; justify-content: center; align-items: flex-start;
+        }
+
+        /* --- VIDEO HUD --- */
+        .vid-frame { 
+            position: relative; 
+            border: 2px solid #333; border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.05);
+            width: 640px; height: 480px;
+            background: #000;
+        }
+        video { transform: scaleX(-1); width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.85; }
+
+        /* --- HUD OVERLAYS --- */
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue);
+            animation: scan 3s infinite linear; opacity: 0.5; pointer-events: none; z-index: 5;
+            display: none;
+        }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+        #alarm-overlay { 
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(20, 0, 0, 0.9); backdrop-filter: blur(8px);
+            border: 4px solid var(--neon-red); z-index: 20; 
+            justify-content: center; align-items: center; text-align: center; flex-direction: column; 
+            animation: pulse-red 1s infinite;
+        }
+        @keyframes pulse-red { 0% { box-shadow: inset 0 0 20px var(--neon-red); } 50% { box-shadow: inset 0 0 80px var(--neon-red); } }
+
+        .alarm-title { font-size: 3.5rem; font-weight: 900; color: var(--neon-red); margin: 0; letter-spacing: 3px; }
+        .alarm-desc { font-size: 1.2rem; font-weight: 600; color: white; background: var(--neon-red); padding: 5px 20px; border-radius: 4px; margin-top: 10px; }
+
+        #ack-btn { 
+            margin-top: 30px; background: transparent; border: 2px solid white; color: white; 
+            padding: 12px 35px; font-family: 'JetBrains Mono', monospace; font-weight: 700; 
+            cursor: pointer; transition: 0.2s; text-transform: uppercase; 
+        }
+        #ack-btn:hover { background: white; color: black; }
+
+        /* --- CONTROL PANEL --- */
+        .panel { 
+            width: 360px; background: var(--glass-bg); padding: 25px; 
+            border-radius: 20px; border: var(--panel-border);
+            backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .status-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #444; margin-right: 8px;}
+        .dot.active { background: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+        .dot.warn { background: var(--neon-amber); animation: blink 0.5s infinite; }
+        .dot.paused { background: #666; }
+        .status-indicator { display: flex; align-items: center; color: white; font-weight: 600; font-size: 0.9rem;}
+
+        .metric-grid { display: grid; gap: 12px; }
+        .metric-card { 
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; 
+            position: relative; border-left: 3px solid #333; transition: 0.3s;
+        }
+        .metric-card.good { border-left-color: var(--neon-blue); }
+        .metric-card.bad { border-left-color: var(--neon-red); background: rgba(255, 42, 42, 0.1); }
+
+        .metric-label { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: #fff; margin-top: 4px; }
+
+        .badge { 
+            position: absolute; top: 12px; right: 12px; font-size: 0.6rem; padding: 4px 8px; 
+            border-radius: 4px; background: #222; color: #666; font-weight: 700;
+        }
+        .badge.active { background: var(--neon-blue); color: #000; }
+        .badge.alert { background: var(--neon-red); color: white; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex:1; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .btn-primary { background: var(--neon-blue); color: #000; }
+        .btn-primary:hover { background: white; }
+
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+        .btn-secondary.suppressed { background: var(--neon-amber); color: #000; animation: pulse-yellow 2s infinite; }
+        @keyframes pulse-yellow { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        #loader { position: absolute; top:0; left:0; width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:center; z-index:50; flex-direction: column;}
+        .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--neon-blue); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Neuro-Nod <span style="font-weight:300">Elite</span></h1>
+        <div class="subtitle">Multi-Axis Driver Monitoring System</div>
+    </header>
+
+    <div id="ui-wrapper">
+        <div class="vid-frame">
+            <div id="loader"><div class="spinner"></div><p style="color:#666; font-size:0.8rem; margin-top:10px;">LOADING MODELS...</p></div>
+            <div class="scan-line" id="scan-line"></div>
+            <video id="input_video" playsinline></video>
+
+            <div id="alarm-overlay">
+                <h1 class="alarm-title">DANGER</h1>
+                <div class="alarm-desc" id="alert-reason">FATIGUE DETECTED</div>
+                <button id="ack-btn">Acknowledge</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="status-header">
+                <span style="color:#888; font-size:0.8rem;">SYSTEM STATUS</span>
+                <div class="status-indicator">
+                    <div id="status-dot" class="dot"></div>
+                    <span id="status-text">STANDBY</span>
+                </div>
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric-card" id="card-head">
+                    <div class="metric-label">Head Pose (Pitch / Roll)</div>
+                    <div class="metric-value" id="head-val">0.00 / 0.00</div>
+                    <div id="slump-badge" class="badge">NORMAL</div>
+                </div>
+
+                <div class="metric-card" id="card-eye">
+                    <div class="metric-label">Ocular Openness (EAR)</div>
+                    <div class="metric-value" id="ear-val">0.00</div>
+                    <div id="sunglass-badge" class="badge">SUNGLASSES</div>
+                </div>
+
+                <div class="metric-card" id="card-mouth">
+                    <div class="metric-label">Mouth Aperture (MAR)</div>
+                    <div class="metric-value" id="mar-val">0.00</div>
+                </div>
+            </div>
+
+            <div id="msg-box" style="margin-top:15px; text-align:center; font-size:0.75rem; color:#666; font-weight:bold;">Waiting for user...</div>
+
+            <div class="btn-group">
+                <button id="startBtn" class="btn btn-primary">Start</button>
+                <button id="pauseBtn" class="btn btn-secondary">Pause (20s)</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- APP STATE ---
+    const videoElement = document.getElementById('input_video');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const ackBtn = document.getElementById('ack-btn');
+    const loader = document.getElementById('loader');
+
+    const statusText = document.getElementById('status-text');
+    const statusDot = document.getElementById('status-dot');
+    const msgBox = document.getElementById('msg-box');
+    const headVal = document.getElementById('head-val');
+    const earVal = document.getElementById('ear-val');
+    const marVal = document.getElementById('mar-val');
+
+    const slumpBadge = document.getElementById('slump-badge');
+    const sunglassBadge = document.getElementById('sunglass-badge');
+
+    const cardHead = document.getElementById('card-head');
+    const cardEye = document.getElementById('card-eye');
+    const cardMouth = document.getElementById('card-mouth');
+
+    const alarmOverlay = document.getElementById('alarm-overlay');
+    const alertReason = document.getElementById('alert-reason');
+
+    let audioCtx, mainGain, osc;
+    let isCalibrated = false, calibFrames = 0;
+    let basePitch = 0, baseEAR = 0, baseRoll = 0, baseYaw = 0;
+    const buffers = { pitch:[], ear:[], roll:[], yaw:[] };
+    let sPitch=0, sRoll=0, sEAR=0, sMAR=0, sYaw=0;
+    const ALPHA = 0.25;
+
+    let timers = { head: null, eye: null, yawn: null, sunglass: null };
+    let sunglassMode = false;
+    let muteUntil = 0;
+    let suppressUntil = 0;
+
+    const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
+    const getIPD = (lm) => dist(lm[133], lm[362]);
+
+    function initAudio() {
+        if(audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mainGain = audioCtx.createGain();
+        mainGain.gain.value = 0;
+        mainGain.connect(audioCtx.destination);
+        osc = audioCtx.createOscillator();
+        osc.type = 'sawtooth'; 
+        osc.frequency.value = 800;
+        osc.connect(mainGain);
+        osc.start();
+    }
+
+    function setAlarm(active) {
+        if(!audioCtx) return;
+        const now = audioCtx.currentTime;
+        if(active) {
+            mainGain.gain.cancelScheduledValues(now);
+            mainGain.gain.setValueAtTime(0, now);
+            mainGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+        } else {
+            mainGain.gain.cancelScheduledValues(now);
+            mainGain.gain.linearRampToValueAtTime(0, now + 0.1);
+        }
+    }
+
+    function onResults(results) {
+        const now = performance.now();
+        if (loader.style.display !== "none") loader.style.display = "none";
+
+        // --- SUSPEND / PAUSE CHECK ---
+        if (now < suppressUntil) {
+            const left = Math.ceil((suppressUntil - now) / 1000);
+            pauseBtn.innerText = `WAIT: ${left}s`;
+            pauseBtn.classList.add("suppressed");
+            statusText.innerText = "SUSPENDED";
+            statusDot.className = "dot paused";
+            msgBox.innerText = "ALARM SUSPENDED BY USER";
+            document.getElementById('scan-line').style.display = "none";
+            alarmOverlay.style.display = "none";
+            setAlarm(false);
+            return; 
+        } else if (pauseBtn.classList.contains("suppressed")) {
+            pauseBtn.classList.remove("suppressed");
+            pauseBtn.innerText = "PAUSE (20s)";
+            statusText.innerText = "ACTIVE";
+            statusDot.className = "dot active";
+            document.getElementById('scan-line').style.display = "block";
+        }
+
+        if (!results.multiFaceLandmarks || !results.multiFaceLandmarks[0]) return;
+        const lm = results.multiFaceLandmarks[0];
+        const masterScale = getIPD(lm);
+
+        // --- CALCULATION ---
+        const rawPitch = dist(lm[1], lm[152]) / masterScale;
+        const rawRoll = Math.abs(lm[133].y - lm[362].y) / masterScale;
+        const eyeCenter = (lm[133].x + lm[362].x) / 2;
+        const rawYaw = Math.abs(eyeCenter - lm[1].x) / masterScale;
+        const leftE = dist(lm[159], lm[145]) / dist(lm[33], lm[133]);
+        const rightE = dist(lm[386], lm[374]) / dist(lm[362], lm[263]);
+        const rawEAR = Math.max(leftE, rightE);
+        const rawMAR = dist(lm[13], lm[14]) / masterScale;
+
+        // --- SMOOTHING ---
+        sPitch = (ALPHA * rawPitch) + (1 - ALPHA) * sPitch;
+        sRoll  = (ALPHA * rawRoll)  + (1 - ALPHA) * sRoll;
+        sYaw   = (ALPHA * rawYaw)   + (1 - ALPHA) * sYaw;
+        sEAR   = (ALPHA * rawEAR)   + (1 - ALPHA) * sEAR;
+        sMAR   = (ALPHA * rawMAR)   + (1 - ALPHA) * sMAR;
+
+        headVal.innerText = `${sPitch.toFixed(2)} / ${sRoll.toFixed(2)}`;
+        earVal.innerText = sEAR.toFixed(2);
+        marVal.innerText = sMAR.toFixed(2);
+
+        // --- CALIBRATION ---
+        if (!isCalibrated) {
+            statusText.innerText = "CALIBRATING...";
+            statusDot.className = "dot warn";
+            msgBox.innerText = "Look at ROAD (not camera) for 3s";
+            buffers.pitch.push(sPitch);
+            buffers.roll.push(sRoll);
+            buffers.yaw.push(sYaw);
+            buffers.ear.push(sEAR);
+            if (++calibFrames > 90) { 
+                const avg = (arr) => arr.reduce((a,b)=>a+b,0)/arr.length;
+                basePitch = avg(buffers.pitch);
+                baseRoll = avg(buffers.roll); 
+                baseYaw = avg(buffers.yaw); 
+                baseEAR = avg(buffers.ear);
+                isCalibrated = true;
+                statusText.innerText = "ACTIVE";
+                statusDot.className = "dot active";
+                document.getElementById('scan-line').style.display = "block";
+            }
+            return;
+        }
+
+        // --- ALARM LOGIC ---
+        const isTurning = Math.abs(sYaw - baseYaw) > 0.25;
+        const yawFactor = 1 + (sYaw * 0.2); 
+        const pitchThresh = (basePitch * 0.80) * yawFactor;
+        const isNodding = sPitch < pitchThresh;
+        const isSlumping = Math.abs(sRoll - baseRoll) > 0.15; 
+
+        // Update UI Badge
+        if (isSlumping) { slumpBadge.innerText = "SIDE SLUMP"; slumpBadge.className = "badge alert"; }
+        else if (isTurning) { slumpBadge.innerText = "MIRROR CHECK"; slumpBadge.className = "badge active"; }
+        else { slumpBadge.innerText = "FORWARD"; slumpBadge.className = "badge"; }
+
+        let activeAlarm = null;
+
+        // Head Alarm
+        if (isNodding || isSlumping) {
+            if (!timers.head) timers.head = now;
+            if (now - timers.head > 2000) activeAlarm = isSlumping ? "SIDEWAYS SLUMP" : "HEAD DROP";
+            cardHead.classList.add("bad");
+        } else { timers.head = null; cardHead.classList.remove("bad"); }
+
+        // Eyes (Sunglasses Detection Included)
+        if (sEAR < 0.05) {
+            if (!timers.sunglass) timers.sunglass = now;
+            if (now - timers.sunglass > 2000) { sunglassMode = true; sunglassBadge.className = "badge active"; }
+        } else timers.sunglass = null;
+
+        if (!activeAlarm && !sunglassMode) {
+            if (sEAR < (baseEAR * 0.65)) {
+                if (!timers.eye) timers.eye = now;
+                if (now - timers.eye > 1500) activeAlarm = "DROWSINESS DETECTED";
+                cardEye.classList.add("bad");
+            } else { timers.eye = null; cardEye.classList.remove("bad"); }
+        }
+
+        // Yawn
+        if (!activeAlarm && sMAR > 0.25) { 
+            if (!timers.yawn) timers.yawn = now;
+            if (now - timers.yawn > 2500) activeAlarm = "FATIGUE (YAWN)";
+            cardMouth.classList.add("bad");
+        } else { timers.yawn = null; cardMouth.classList.remove("bad"); }
+
+        // --- OUTPUT ---
+        if (activeAlarm && performance.now() > muteUntil) {
+            alarmOverlay.style.display = "flex";
+            alertReason.innerText = activeAlarm;
+            setAlarm(true);
+        } else {
+            alarmOverlay.style.display = "none";
+            setAlarm(false);
+        }
+    }
+
+    const faceMesh = new FaceMesh({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
+    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+    faceMesh.onResults(onResults);
+
+    const camera = new Camera(videoElement, {
+        onFrame: async () => { await faceMesh.send({image: videoElement}); },
+        width: 640, height: 480
+    });
+
+    startBtn.onclick = () => { initAudio(); startBtn.style.display = "none"; camera.start(); };
+    ackBtn.onclick = () => { muteUntil = performance.now() + 5000; alarmOverlay.style.display = "none"; setAlarm(false); };
+    pauseBtn.onclick = () => { suppressUntil = performance.now() + 20000; timers = { head: null, eye: null, yawn: null, sunglass: null }; };
+</script>
+</body>
+</html>
