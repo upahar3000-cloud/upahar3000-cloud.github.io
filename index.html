@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upahar Mishra | Portfolio</title>
+    <style>
+        /* --- THEME --- */
+        :root {
+            --neon: #00ffcc;
+            --bg: #0a0a0b;
+            --card: #151517;
+            --text: #eeeeee;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--neon);
+            letter-spacing: 2px;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        /* --- PROJECT SECTION --- */
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--neon);
+            padding-left: 15px;
+        }
+
+        .project-card {
+            background: var(--card);
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:active {
+            transform: scale(0.98);
+        }
+
+        .project-card h3 {
+            margin-top: 0;
+            color: var(--neon);
+        }
+
+        .project-card p {
+            color: #bbb;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--neon);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>UPAHAR MISHRA</h1>
+            <div class="subtitle">AI Developer | Human-Computer Interaction</div>
+        </header>
+
+        <section id="projects">
+            <div class="section-title">Featured Project</div>
+
+            <div class="project-card">
+                <h3>Neuro-Nod Elite V4.4</h3>
+                <p>An advanced Computer Vision system that monitors operator fatigue, distraction, and head-drops in real-time. Built for safety and accessibility using Python logic and MediaPipe.</p>
+                <a href="projects/neuro-nod/index.html" class="btn">View Project Details</a>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Upahar Mishra | Built with Passion
+        </footer>
+    </div>
+
+</body>
+</html>
