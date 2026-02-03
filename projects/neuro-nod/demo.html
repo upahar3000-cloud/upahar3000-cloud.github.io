@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuro-Nod Elite V7.1 | Production Ready</title>
+    <title>Neuro-Nod Elite V10.3.1 | Logic Refinement</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CYBERPUNK HUD THEME --- */
+        /* --- CYBERPUNK HUD THEME (UNCHANGED) --- */
         :root { 
             --neon-blue: #00f3ff; 
             --neon-red: #ff2a2a; 
@@ -41,14 +41,12 @@
         }
         .subtitle { color: #666; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
-        /* --- LAYOUT --- */
         #ui-wrapper { 
             display: flex; gap: 30px; padding: 30px; 
             max-width: 1400px; width: 90%;
             flex-wrap: wrap; justify-content: center; align-items: flex-start;
         }
 
-        /* --- VIDEO HUD --- */
         .vid-frame { 
             position: relative; 
             border: 2px solid #333; border-radius: 20px; 
@@ -59,7 +57,6 @@
         }
         video { transform: scaleX(-1); width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.85; }
 
-        /* --- HUD OVERLAYS --- */
         .scan-line {
             position: absolute; top: 0; left: 0; width: 100%; height: 2px;
             background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue);
@@ -87,7 +84,6 @@
         }
         #ack-btn:hover { background: white; color: black; }
 
-        /* --- CONTROL PANEL --- */
         .panel { 
             width: 360px; background: var(--glass-bg); padding: 25px; 
             border-radius: 20px; border: var(--panel-border);
@@ -119,16 +115,19 @@
         .badge.active { background: var(--neon-blue); color: #000; }
         .badge.alert { background: var(--neon-red); color: white; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex:1; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn { flex:1; padding: 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; min-width: 140px; }
         .btn-primary { background: var(--neon-blue); color: #000; }
-        .btn-primary:hover { background: white; }
-
         .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        .btn-secondary.suppressed { background: var(--neon-amber); color: #000; }
+        .btn-toggle { background: #222; color: #888; border: 1px solid #444; width: 100%; margin-bottom: 5px; }
+        .btn-toggle.active { background: var(--neon-amber); color: #000; border-color: var(--neon-amber); }
 
-        .btn-secondary.suppressed { background: var(--neon-amber); color: #000; animation: pulse-yellow 2s infinite; }
-        @keyframes pulse-yellow { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        #warning-bar {
+            background: rgba(255, 42, 42, 0.2); border: 1px solid var(--neon-red); color: #ffcccc;
+            font-size: 0.65rem; padding: 8px; margin-top: 15px; text-align: center;
+            border-radius: 6px; display: none; font-weight: 600;
+        }
 
         #loader { position: absolute; top:0; left:0; width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:center; z-index:50; flex-direction: column;}
         .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--neon-blue); border-radius: 50%; animation: spin 1s infinite linear; }
@@ -139,12 +138,12 @@
 
     <header>
         <h1>Neuro-Nod <span style="font-weight:300">Elite</span></h1>
-        <div class="subtitle">Multi-Axis Driver Monitoring System</div>
+        <div class="subtitle">Multi-Axis Driver Monitoring System (V10.3.1)</div>
     </header>
 
     <div id="ui-wrapper">
         <div class="vid-frame">
-            <div id="loader"><div class="spinner"></div><p style="color:#666; font-size:0.8rem; margin-top:10px;">LOADING MODELS...</p></div>
+            <div id="loader"><div class="spinner"></div><p style="color:#666; font-size:0.8rem; margin-top:10px;">OPTIMIZING ENGINE...</p></div>
             <div class="scan-line" id="scan-line"></div>
             <video id="input_video" playsinline></video>
 
@@ -167,234 +166,380 @@
             <div class="metric-grid">
                 <div class="metric-card" id="card-head">
                     <div class="metric-label">Head Pose (Pitch / Roll)</div>
-                    <div class="metric-value" id="head-val">0.00 / 0.00</div>
-                    <div id="slump-badge" class="badge">NORMAL</div>
+                    <div class="metric-value" id="head-val">0.0° / 0.0°</div>
+                    <div id="slump-badge" class="badge">STABLE</div>
                 </div>
 
                 <div class="metric-card" id="card-eye">
-                    <div class="metric-label">Ocular Openness (EAR)</div>
+                    <div class="metric-label">Eye Openness (EAR)</div>
                     <div class="metric-value" id="ear-val">0.00</div>
-                    <div id="sunglass-badge" class="badge">SUNGLASSES</div>
+                    <div id="sunglass-badge" class="badge">VISION CLEAR</div>
                 </div>
 
                 <div class="metric-card" id="card-mouth">
-                    <div class="metric-label">Mouth Aperture (MAR)</div>
+                    <div class="metric-label">Mouth (MAR)</div>
                     <div class="metric-value" id="mar-val">0.00</div>
                 </div>
             </div>
 
-            <div id="msg-box" style="margin-top:15px; text-align:center; font-size:0.75rem; color:#666; font-weight:bold;">Waiting for user...</div>
+            <div id="warning-bar">SUNGLASSES MODE: REDUCED ACCURACY (HEAD POSTURE ONLY)</div>
+            <div id="msg-box" style="margin-top:15px; text-align:center; font-size:0.75rem; color:#666; font-weight:bold;">SYSTEM READY</div>
 
             <div class="btn-group">
-                <button id="startBtn" class="btn btn-primary">Start</button>
+                <button id="modeToggle" class="btn btn-toggle">Mode: Standard</button>
+                <button id="startBtn" class="btn btn-primary">Start System</button>
                 <button id="pauseBtn" class="btn btn-secondary">Pause (20s)</button>
             </div>
         </div>
     </div>
 
 <script>
-    // --- APP STATE ---
+    // --- APP STATE & DOM ---
     const videoElement = document.getElementById('input_video');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
+    const modeToggle = document.getElementById('modeToggle');
     const ackBtn = document.getElementById('ack-btn');
     const loader = document.getElementById('loader');
-
-    const statusText = document.getElementById('status-text');
-    const statusDot = document.getElementById('status-dot');
-    const msgBox = document.getElementById('msg-box');
-    const headVal = document.getElementById('head-val');
-    const earVal = document.getElementById('ear-val');
-    const marVal = document.getElementById('mar-val');
-
-    const slumpBadge = document.getElementById('slump-badge');
-    const sunglassBadge = document.getElementById('sunglass-badge');
-
-    const cardHead = document.getElementById('card-head');
-    const cardEye = document.getElementById('card-eye');
-    const cardMouth = document.getElementById('card-mouth');
-
-    const alarmOverlay = document.getElementById('alarm-overlay');
-    const alertReason = document.getElementById('alert-reason');
+    const statusText = document.getElementById('status-text'), statusDot = document.getElementById('status-dot'), msgBox = document.getElementById('msg-box');
+    const headVal = document.getElementById('head-val'), earVal = document.getElementById('ear-val'), marVal = document.getElementById('mar-val');
+    const slumpBadge = document.getElementById('slump-badge'), sunglassBadge = document.getElementById('sunglass-badge');
+    const alarmOverlay = document.getElementById('alarm-overlay'), alertReason = document.getElementById('alert-reason');
+    const cardHead = document.getElementById('card-head'), cardEye = document.getElementById('card-eye'), cardMouth = document.getElementById('card-mouth');
+    const warningBar = document.getElementById('warning-bar');
 
     let audioCtx, mainGain, osc;
-    let isCalibrated = false, calibFrames = 0;
-    let basePitch = 0, baseEAR = 0, baseRoll = 0, baseYaw = 0;
-    const buffers = { pitch:[], ear:[], roll:[], yaw:[] };
-    let sPitch=0, sRoll=0, sEAR=0, sMAR=0, sYaw=0;
-    const ALPHA = 0.25;
+    let isCalibrated = false, calibrationStartTime = 0;
+    let basePitch = 0, baseRoll = 0, baseEAR = 0, baseMAR = 0;
+    let sPitch=0, sRoll=0, sEAR=0, sMAR=0;
+    
+    // PHYSICS
+    const ALPHA = 0.15; 
+    const RAD_TO_DEG = 180 / Math.PI;
+    
+    // WATCHDOG TIMERS
+    let timers = { 
+        deepDrop: null, 
+        sideSlump: null, 
+        stiffEye: null,
+        yawn: null
+    };
+    
+    // GLOBALS V10.3.1
+    let faceLostTimer = null;
+    let sunglassTimer = null;
+    let persistentSunglasses = false; // Internal auto-detection state
+    let manualSunglassesMode = false; // V10.3 Manual Override
 
-    let timers = { head: null, eye: null, yawn: null, sunglass: null };
-    let sunglassMode = false;
-    let muteUntil = 0;
-    let suppressUntil = 0;
-
-    const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
-    const getIPD = (lm) => dist(lm[133], lm[362]);
+    let muteUntil = 0, suppressUntil = 0;
 
     function initAudio() {
         if(audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        mainGain = audioCtx.createGain();
-        mainGain.gain.value = 0;
+        mainGain = audioCtx.createGain(); 
+        mainGain.gain.value = 0; 
         mainGain.connect(audioCtx.destination);
-        osc = audioCtx.createOscillator();
+        osc = audioCtx.createOscillator(); 
         osc.type = 'sawtooth'; 
-        osc.frequency.value = 800;
-        osc.connect(mainGain);
+        osc.frequency.value = 850;
+        osc.connect(mainGain); 
         osc.start();
     }
 
     function setAlarm(active) {
         if(!audioCtx) return;
         const now = audioCtx.currentTime;
-        if(active) {
-            mainGain.gain.cancelScheduledValues(now);
-            mainGain.gain.setValueAtTime(0, now);
-            mainGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+        mainGain.gain.cancelScheduledValues(now);
+        mainGain.gain.linearRampToValueAtTime(active ? 0.25 : 0, now + 0.1);
+    }
+
+    // Audio Control V10.2+
+    function handleAudio(active, type, now) {
+        if(!audioCtx) return;
+        
+        if (active) {
+            const targetFreq = (type === 'pulse') ? 440 : 850;
+            if (osc.frequency.value !== targetFreq) {
+                osc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
+            }
+
+            if (type === 'pulse') {
+                const cycle = now % 800; 
+                if (cycle < 200) { setAlarm(true); } else { setAlarm(false); }
+            } else {
+                setAlarm(true);
+            }
         } else {
-            mainGain.gain.cancelScheduledValues(now);
-            mainGain.gain.linearRampToValueAtTime(0, now + 0.1);
+            setAlarm(false);
         }
+    }
+
+    function dist3D(p1, p2) { 
+        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2)); 
     }
 
     function onResults(results) {
         const now = performance.now();
         if (loader.style.display !== "none") loader.style.display = "none";
 
-        // --- SUSPEND / PAUSE CHECK ---
         if (now < suppressUntil) {
-            const left = Math.ceil((suppressUntil - now) / 1000);
-            pauseBtn.innerText = `WAIT: ${left}s`;
-            pauseBtn.classList.add("suppressed");
-            statusText.innerText = "SUSPENDED";
-            statusDot.className = "dot paused";
-            msgBox.innerText = "ALARM SUSPENDED BY USER";
-            document.getElementById('scan-line').style.display = "none";
-            alarmOverlay.style.display = "none";
-            setAlarm(false);
-            return; 
-        } else if (pauseBtn.classList.contains("suppressed")) {
-            pauseBtn.classList.remove("suppressed");
-            pauseBtn.innerText = "PAUSE (20s)";
+            handleSuspensionUI(now);
+            return;
+        } else resetSuspensionUI();
+
+        // 3. FACE LOST FAILSAFE (V10.2)
+        if (!results.multiFaceLandmarks || !results.multiFaceLandmarks[0]) {
+            if (isCalibrated) {
+                if (!faceLostTimer) faceLostTimer = now;
+                if (now - faceLostTimer > 1500) {
+                    alarmOverlay.style.display = "flex";
+                    alertReason.innerText = "FACE LOST - CHECK POSITION";
+                    handleAudio(true, 'pulse', now);
+                    return; 
+                }
+            }
+            return;
+        } else {
+            faceLostTimer = null;
+            if (alertReason.innerText === "FACE LOST - CHECK POSITION") {
+                 alarmOverlay.style.display = "none";
+                 setAlarm(false);
+            }
+        }
+
+        const lm = results.multiFaceLandmarks[0];
+
+        // 1. CALCULATE RAW PHYSICS (3D)
+        const rawPitch = Math.atan2(lm[1].y - lm[152].y, lm[1].z - lm[152].z) * RAD_TO_DEG;
+        const rawRoll = Math.atan2(lm[362].y - lm[133].y, lm[362].x - lm[133].x) * RAD_TO_DEG;
+        
+        const leftE = dist3D(lm[159], lm[145]) / dist3D(lm[33], lm[133]);
+        const rightE = dist3D(lm[386], lm[374]) / dist3D(lm[362], lm[263]);
+        const rawEAR = (leftE + rightE) / 2;
+        const rawMAR = dist3D(lm[13], lm[14]) / dist3D(lm[1], lm[152]);
+
+        // 2. SMOOTHING (EMA)
+        sPitch = (ALPHA * rawPitch) + (1 - ALPHA) * sPitch;
+        sRoll  = (ALPHA * rawRoll)  + (1 - ALPHA) * sRoll;
+        sEAR   = (ALPHA * rawEAR)   + (1 - ALPHA) * sEAR;
+        sMAR   = (ALPHA * rawMAR)   + (1 - ALPHA) * sMAR;
+
+        headVal.innerText = `${sPitch.toFixed(1)}° / ${sRoll.toFixed(1)}°`;
+        earVal.innerText = sEAR.toFixed(2);
+        marVal.innerText = sMAR.toFixed(2);
+
+        // 3. CALIBRATION
+        if (!isCalibrated) {
+            handleCalibration(now);
+            return;
+        }
+
+        // 4. MAIN LOGIC CORE (V10.3.1)
+        processLogicV10(now);
+    }
+
+    function handleCalibration(now) {
+        if (calibrationStartTime === 0) calibrationStartTime = now;
+        const elapsed = now - calibrationStartTime;
+        statusText.innerText = `CALIBRATING (${Math.ceil((3000-elapsed)/1000)}s)`;
+        statusDot.className = "dot warn";
+        msgBox.innerText = "LOOK STRAIGHT AT ROAD...";
+        
+        basePitch = (basePitch * 0.9) + (sPitch * 0.1);
+        baseRoll = (baseRoll * 0.9) + (sRoll * 0.1);
+        baseEAR = (baseEAR * 0.9) + (sEAR * 0.1);
+        baseMAR = (baseMAR * 0.9) + (sMAR * 0.1);
+
+        if (elapsed > 3000) {
+            isCalibrated = true;
             statusText.innerText = "ACTIVE";
             statusDot.className = "dot active";
             document.getElementById('scan-line').style.display = "block";
         }
+    }
 
-        if (!results.multiFaceLandmarks || !results.multiFaceLandmarks[0]) return;
-        const lm = results.multiFaceLandmarks[0];
-        const masterScale = getIPD(lm);
-
-        // --- CALCULATION ---
-        const rawPitch = dist(lm[1], lm[152]) / masterScale;
-        const rawRoll = Math.abs(lm[133].y - lm[362].y) / masterScale;
-        const eyeCenter = (lm[133].x + lm[362].x) / 2;
-        const rawYaw = Math.abs(eyeCenter - lm[1].x) / masterScale;
-        const leftE = dist(lm[159], lm[145]) / dist(lm[33], lm[133]);
-        const rightE = dist(lm[386], lm[374]) / dist(lm[362], lm[263]);
-        const rawEAR = Math.max(leftE, rightE);
-        const rawMAR = dist(lm[13], lm[14]) / masterScale;
-
-        // --- SMOOTHING ---
-        sPitch = (ALPHA * rawPitch) + (1 - ALPHA) * sPitch;
-        sRoll  = (ALPHA * rawRoll)  + (1 - ALPHA) * sRoll;
-        sYaw   = (ALPHA * rawYaw)   + (1 - ALPHA) * sYaw;
-        sEAR   = (ALPHA * rawEAR)   + (1 - ALPHA) * sEAR;
-        sMAR   = (ALPHA * rawMAR)   + (1 - ALPHA) * sMAR;
-
-        headVal.innerText = `${sPitch.toFixed(2)} / ${sRoll.toFixed(2)}`;
-        earVal.innerText = sEAR.toFixed(2);
-        marVal.innerText = sMAR.toFixed(2);
-
-        // --- CALIBRATION ---
-        if (!isCalibrated) {
-            statusText.innerText = "CALIBRATING...";
-            statusDot.className = "dot warn";
-            msgBox.innerText = "Look at ROAD (not camera) for 3s";
-            buffers.pitch.push(sPitch);
-            buffers.roll.push(sRoll);
-            buffers.yaw.push(sYaw);
-            buffers.ear.push(sEAR);
-            if (++calibFrames > 90) { 
-                const avg = (arr) => arr.reduce((a,b)=>a+b,0)/arr.length;
-                basePitch = avg(buffers.pitch);
-                baseRoll = avg(buffers.roll); 
-                baseYaw = avg(buffers.yaw); 
-                baseEAR = avg(buffers.ear);
-                isCalibrated = true;
-                statusText.innerText = "ACTIVE";
-                statusDot.className = "dot active";
-                document.getElementById('scan-line').style.display = "block";
-            }
-            return;
-        }
-
-        // --- ALARM LOGIC ---
-        const isTurning = Math.abs(sYaw - baseYaw) > 0.25;
-        const yawFactor = 1 + (sYaw * 0.2); 
-        const pitchThresh = (basePitch * 0.80) * yawFactor;
-        const isNodding = sPitch < pitchThresh;
-        const isSlumping = Math.abs(sRoll - baseRoll) > 0.15; 
-
-        // Update UI Badge
-        if (isSlumping) { slumpBadge.innerText = "SIDE SLUMP"; slumpBadge.className = "badge alert"; }
-        else if (isTurning) { slumpBadge.innerText = "MIRROR CHECK"; slumpBadge.className = "badge active"; }
-        else { slumpBadge.innerText = "FORWARD"; slumpBadge.className = "badge"; }
-
+    // --- REFINED LOGIC ENGINE V10.3.1 ---
+    function processLogicV10(now) {
         let activeAlarm = null;
 
-        // Head Alarm
-        if (isNodding || isSlumping) {
-            if (!timers.head) timers.head = now;
-            if (now - timers.head > 2000) activeAlarm = isSlumping ? "SIDEWAYS SLUMP" : "HEAD DROP";
+        // --- DEFINITIONS & ZONES ---
+        const isNodding = sPitch < (basePitch - 28); 
+        const isDeepDrop = sPitch < (basePitch - 43); 
+        const isSlumping = Math.abs(sRoll - baseRoll) > 15;
+        
+        // 1. SMART SUNGLASSES LOGIC
+        if (manualSunglassesMode) {
+            persistentSunglasses = true;
+        } else {
+            // Standard Auto-Detection Logic
+            if (sEAR < 0.05) {
+                if (!sunglassTimer) sunglassTimer = now;
+                if (now - sunglassTimer > 2000) persistentSunglasses = true;
+            } else if (sEAR > 0.08) {
+                sunglassTimer = null;
+                persistentSunglasses = false;
+            }
+        }
+        
+        const isSunglasses = persistentSunglasses; 
+        const isEyesClosed = isSunglasses ? false : (sEAR < (baseEAR * 0.60));
+
+        // --- WATCHDOG 1: DEEP DROP (Critical Failsafe) ---
+        if (isDeepDrop) {
+            if (!timers.deepDrop) timers.deepDrop = now;
+            if (now - timers.deepDrop > 800) activeAlarm = "CRITICAL: HEAD DROP"; 
             cardHead.classList.add("bad");
-        } else { timers.head = null; cardHead.classList.remove("bad"); }
-
-        // Eyes (Sunglasses Detection Included)
-        if (sEAR < 0.05) {
-            if (!timers.sunglass) timers.sunglass = now;
-            if (now - timers.sunglass > 2000) { sunglassMode = true; sunglassBadge.className = "badge active"; }
-        } else timers.sunglass = null;
-
-        if (!activeAlarm && !sunglassMode) {
-            if (sEAR < (baseEAR * 0.65)) {
-                if (!timers.eye) timers.eye = now;
-                if (now - timers.eye > 1500) activeAlarm = "DROWSINESS DETECTED";
-                cardEye.classList.add("bad");
-            } else { timers.eye = null; cardEye.classList.remove("bad"); }
+            slumpBadge.innerText = "HEAD DROP"; slumpBadge.className = "badge alert";
+        } else {
+            timers.deepDrop = null;
         }
 
-        // Yawn
-        if (!activeAlarm && sMAR > 0.25) { 
-            if (!timers.yawn) timers.yawn = now;
-            if (now - timers.yawn > 2500) activeAlarm = "FATIGUE (YAWN)";
+        // --- WATCHDOG 2: NODDING & SIDE SLUMP ---
+        if ((isNodding && !isDeepDrop) || isSlumping) {
+            cardHead.classList.add("bad"); 
+            
+            if (isSlumping) {
+                slumpBadge.innerText = "SIDE SLUMP"; 
+            } else {
+                slumpBadge.innerText = "NODDING"; 
+            }
+            slumpBadge.className = "badge alert";
+
+            // --- V10.3.1 LOGIC REFINEMENT ---
+            let shouldTriggerAudio = false;
+
+            if (manualSunglassesMode) {
+                // Sunglasses Mode: Eyes are invisible. Posture is the ONLY signal.
+                // Any detected Nod or Slump is treated as fatigue.
+                shouldTriggerAudio = true;
+            } else {
+                // Standard Mode: "Safety Guard" Active.
+                // Audio triggers only if Posture is bad AND (Eyes are Closed OR Auto-detected Sunglasses)
+                if (isEyesClosed || persistentSunglasses) {
+                    shouldTriggerAudio = true;
+                }
+            }
+
+            if (shouldTriggerAudio) {
+                 if (!timers.sideSlump) timers.sideSlump = now;
+                 // V10.3.1 Threshold: 1.2s strict for sunglasses mode, or dynamic based on slump
+                 const threshold = (manualSunglassesMode || !isSlumping) ? 1200 : 1500; 
+
+                 if (now - timers.sideSlump > threshold) {
+                    activeAlarm = isSlumping ? "CRITICAL: SIDE SLUMP" : "DROWSINESS DETECTED";
+                 }
+                 
+                 // Dynamic UI Message
+                 if (manualSunglassesMode) {
+                     msgBox.innerText = "POSTURE ALARM (MANUAL MODE)";
+                 } else {
+                     msgBox.innerText = "FATIGUE (POSTURE + EYES)";
+                 }
+                 msgBox.style.color = "var(--neon-red)";
+            } else {
+                // Standard Mode + Eyes Open = Silent Visual Warning
+                timers.sideSlump = null; 
+                msgBox.innerText = "POSTURE WARNING (VISUAL)";
+                msgBox.style.color = "var(--neon-amber)";
+            }
+        } else if (!isDeepDrop) {
+            timers.sideSlump = null;
+            cardHead.classList.remove("bad");
+            slumpBadge.innerText = "STABLE"; slumpBadge.className = "badge";
+        }
+
+        // --- WATCHDOG 3: STIFF NECK SLEEP ---
+        if (!isDeepDrop && !isSlumping && !isNodding) {
+            if (isSunglasses) {
+                sunglassBadge.innerText = "SUNGLASSES"; sunglassBadge.className = "badge active";
+                cardEye.classList.remove("bad");
+            } else {
+                sunglassBadge.innerText = "VISION CLEAR"; sunglassBadge.className = "badge";
+                
+                if (isEyesClosed) {
+                    if (!timers.stiffEye) timers.stiffEye = now;
+                    if (now - timers.stiffEye > 1500) activeAlarm = "DROWSINESS (EYES)";
+                    cardEye.classList.add("bad");
+                    msgBox.innerText = "WAKE UP!";
+                } else {
+                    timers.stiffEye = null;
+                    cardEye.classList.remove("bad");
+                    if (!activeAlarm && msgBox.innerText !== "MOUTH WIDE OPEN") { msgBox.innerText = "SYSTEM ACTIVE"; msgBox.style.color = "#666"; }
+                }
+            }
+        }
+
+        // --- YAWN LOGIC (Visual Only) ---
+        const yawnThresh = baseMAR > 0 ? (baseMAR * 3.5) : 0.55; 
+        
+        if (sMAR > yawnThresh) {
             cardMouth.classList.add("bad");
-        } else { timers.yawn = null; cardMouth.classList.remove("bad"); }
+            msgBox.innerText = "MOUTH WIDE OPEN";
+            msgBox.style.color = "var(--neon-amber)";
+        } else { 
+            cardMouth.classList.remove("bad"); 
+            if (!activeAlarm && !isNodding && !isSlumping && !isEyesClosed) {
+                 msgBox.innerText = "SYSTEM ACTIVE"; msgBox.style.color = "#666"; 
+            }
+        }
 
         // --- OUTPUT ---
-        if (activeAlarm && performance.now() > muteUntil) {
+        if (activeAlarm && now > muteUntil) {
             alarmOverlay.style.display = "flex";
             alertReason.innerText = activeAlarm;
-            setAlarm(true);
+            handleAudio(true, 'standard', now); 
         } else {
-            alarmOverlay.style.display = "none";
-            setAlarm(false);
+            if (alertReason.innerText !== "FACE LOST - CHECK POSITION") {
+                alarmOverlay.style.display = "none";
+                handleAudio(false, 'standard', now);
+            }
         }
     }
 
+    function handleSuspensionUI(now) {
+        const left = Math.ceil((suppressUntil - now) / 1000);
+        pauseBtn.innerText = `RESUME IN: ${left}s`;
+        pauseBtn.classList.add("suppressed");
+        statusText.innerText = "SUSPENDED";
+        statusDot.className = "dot paused";
+        setAlarm(false);
+    }
+
+    function resetSuspensionUI() {
+        if (pauseBtn.classList.contains("suppressed")) {
+            pauseBtn.classList.remove("suppressed");
+            pauseBtn.innerText = "PAUSE (20s)";
+            statusText.innerText = "ACTIVE";
+            statusDot.className = "dot active";
+        }
+    }
+    
+    // --- MANUAL MODE HANDLER ---
+    modeToggle.onclick = () => {
+        manualSunglassesMode = !manualSunglassesMode;
+        if (manualSunglassesMode) {
+            modeToggle.classList.add("active");
+            modeToggle.innerText = "Mode: Sunglasses";
+            warningBar.style.display = "block";
+            sunglassBadge.innerText = "MANUAL MODE";
+            sunglassBadge.className = "badge active";
+        } else {
+            modeToggle.classList.remove("active");
+            modeToggle.innerText = "Mode: Standard";
+            warningBar.style.display = "none";
+            persistentSunglasses = false; 
+        }
+    };
+
     const faceMesh = new FaceMesh({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
-    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
     faceMesh.onResults(onResults);
 
-    const camera = new Camera(videoElement, {
-        onFrame: async () => { await faceMesh.send({image: videoElement}); },
-        width: 640, height: 480
-    });
+    const camera = new Camera(videoElement, { onFrame: async () => { await faceMesh.send({image: videoElement}); }, width: 640, height: 480 });
 
     startBtn.onclick = () => { initAudio(); startBtn.style.display = "none"; camera.start(); };
     ackBtn.onclick = () => { muteUntil = performance.now() + 5000; alarmOverlay.style.display = "none"; setAlarm(false); };
-    pauseBtn.onclick = () => { suppressUntil = performance.now() + 20000; timers = { head: null, eye: null, yawn: null, sunglass: null }; };
+    pauseBtn.onclick = () => { suppressUntil = performance.now() + 20000; };
 </script>
 </body>
 </html>
