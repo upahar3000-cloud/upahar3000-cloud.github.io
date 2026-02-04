@@ -3,135 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Neuro-Nod Elite | AI Driver Monitoring</title>
-    <meta name="description" content="Official portfolio of Upahar Mishra, developer of Neuro-Nod Elite, an AI-powered driver safety monitoring system.">
-    <meta name="keywords" content="Upahar Mishra, Neuro-Nod, AI Developer, Driver Safety System, Nepal Developer">
-    <meta name="author" content="Upahar Mishra">
-
-    <meta property="og:title" content="Neuro-Nod Elite | Driver Safety System">
-    <meta property="og:description" content="Developer of Neuro-Nod Elite: AI Driver Monitoring System.">
-    <meta property="og:url" content="https://upaharmishra.com.np">
-    <meta property="og:type" content="website">
-    <meta name="google-site-verification" content="LMNRmVFsr7U4GUGLDwjW2gDwHzqcITIDaW9S8J3SKdU" />
+    <title>Neuro-Nod Elite | Advanced DMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- THEME --- */
         :root {
-            --neon: #00ffcc;
-            --bg: #0a0a0b;
-            --card: #151517;
-            --text: #eeeeee;
+            --neon: #00f3ff;       /* Cyberpunk Cyan */
+            --bg: #ffffff;         /* Clean White Hero */
+            --dark-bg: #0a0a0c;    /* Deep Black Essence */
+            --text-main: #121214;  /* High Contrast Text */
+            --accent-gray: #f4f4f7;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
-            color: var(--text);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow-x: hidden;
+            color: var(--text-main);
         }
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
-
-        header {
+        /* --- HERO SECTION (The Entrance) --- */
+        .hero {
+            padding: 140px 20px 100px;
             text-align: center;
-            padding: 40px 0;
-            border-bottom: 1px solid #333;
-            margin-bottom: 40px;
+            animation: fadeIn 1s ease-out;
         }
 
         h1 {
-            color: var(--neon);
-            letter-spacing: 2px;
-            margin: 0;
-            font-size: 2.5rem;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0 auto 25px;
+            max-width: 1000px;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            /* subtle gradient to make the black look 'richer' */
+            background: linear-gradient(180deg, #000 0%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .subtitle {
-            color: #888;
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-
-        /* --- PROJECT SECTION --- */
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--neon);
-            padding-left: 15px;
-        }
-
-        .project-card {
-            background: var(--card);
-            border: 1px solid #222;
-            border-radius: 12px;
-            padding: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .project-card:active {
-            transform: scale(0.98);
-        }
-
-        .project-card h3 {
-            margin-top: 0;
-            color: var(--neon);
-        }
-
-        .project-card p {
-            color: #bbb;
+        .hero p {
+            font-size: 1.25rem;
+            color: #616161;
+            max-width: 680px;
+            margin: 0 auto 45px;
             line-height: 1.6;
         }
 
-        .btn {
-            display: inline-block;
-            background: var(--neon);
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 15px;
-            text-transform: uppercase;
-            font-size: 0.9rem;
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
-        footer {
-            margin-top: 60px;
-            text-align: center;
-            color: #555;
-            font-size: 0.8rem;
+        /* Primary Button: Direct Path to AI */
+        .btn-primary {
+            background: #000;
+            color: #fff;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover { 
+            transform: translateY(-4px); 
+            background: var(--dark-bg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-color: var(--neon);
+        }
+
+        /* Secondary Button: Path to Video */
+        .btn-secondary {
+            background: var(--accent-gray);
+            color: #000;
+            padding: 20px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .btn-secondary:hover { 
+            background: #e8e8ed; 
+            border-color: #d1d1d6;
+        }
+
+        /* --- THE ESSENCE SECTION (The Tech) --- */
+        .essence-section {
+            background: var(--dark-bg);
+            padding: 120px 20px;
+            color: #fff;
+            border-radius: 60px 60px 0 0;
+            box-shadow: 0 -20px 50px rgba(0,0,0,0.15);
+            margin-top: 40px;
+        }
+
+        .essence-header {
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .grid {
+            max-width: 1200px;
+            margin: 70px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #16161a, #0d0d0f);
+            padding: 45px;
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--neon);
+            transform: translateY(-10px);
+            background: #1a1a20;
+            box-shadow: 0 20px 40px rgba(0, 243, 255, 0.05);
+        }
+
+        .card h3 {
+            font-family: 'JetBrains Mono';
+            color: var(--neon);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card p {
+            color: #8a8a8e;
+            line-height: 1.7;
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        /* --- ANIMATIONS & DETAILS --- */
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .scan-line { 
+            opacity: 0.8;
+            animation: scan 2s linear infinite; 
+        }
+
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .essence-header { flex-direction: column; align-items: flex-start; }
+            .cta-group { flex-direction: column; width: 100%; }
+            .btn-primary, .btn-secondary { width: 100%; box-sizing: border-box; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Equation Elite</h1>
-            <div class="subtitle">AI Developer | Human-Computer Interaction</div>
-        </header>
+    <section class="hero">
+        <h1>Safety Systems that Understand, Protect, and Impress.</h1>
+        <p>Empowering operators with AI-driven protection—Smart, Depth-Agnostic, and always focused on the human factor.</p>
+        
+        <div class="cta-group">
+            <a href="projects/neuro-nod/demo.html" class="btn-primary">Initialize System</a>
+            
+            <a href="projects/neuro-nod/brief.mp4" target="_blank" class="btn-secondary">View Concept Brief</a>
+        </div>
+    </section>
 
-        <section id="projects">
-            <div class="section-title">Featured Project</div>
+    <section class="essence-section">
+        <div class="essence-header">
+            <h2 style="font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 0; max-width: 600px; line-height: 1.2;">
+                Innovate Your Safety—AI Precision for Modern Operators.
+            </h2>
+            
+            <a href="logic.pdf" target="_blank" style="color:var(--neon); text-decoration:none; font-family:'JetBrains Mono'; font-weight: 700; font-size: 0.9rem; transition: 0.3s;">
+                SEE_ALL_LOGIC (PDF) <span style="font-family: sans-serif;">→</span>
+            </a>
+        </div>
 
-            <div class="project-card">
-                <h3>Neuro-Nod Elite V10.3.1</h3>
-                <p>An advanced Computer Vision system that monitors operator fatigue, distraction, and head-drops in real-time. Built for safety and accessibility using Python logic and MediaPipe.</p>
-                <a href="projects/neuro-nod/index.html" class="btn">View Project Details</a>
+        <div class="grid">
+            <div class="card">
+                <div class="scan-line"></div>
+                <h3>SAFETY AS A RIGHT, NOT A LUXURY.</h3>
+                <p>Elite safety should not have a paywall. We democratize AI protection, bringing life-saving, privacy-first monitoring to every driver, on every road, regardless of their vehicle.</p>
             </div>
-        </section>
 
-        <footer>
-            &copy; 2026 Upahar Mishra | Built with Passion
-        </footer>
-    </div>
+            <div class="card">
+                <div class="scan-line"></div>
+                <h3>Edge-RAM Sovereignty</h3>
+                <p>Local browser processing ensures zero cloud latency and total privacy. Safety that operates seamlessly even in connectivity dead zones.</p>
+            </div>
+
+            <div class="card">
+                <div class="scan-line"></div>
+                <h3>Context-Aware Fail-Safe</h3>
+                <p>Automatic transition to Posture-Primary detection (V10.3.1) when optical paths are obstructed by tinted eyewear or low-light conditions.</p>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>
