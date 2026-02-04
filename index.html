@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neuro-Nod Elite | Advanced DMS</title>
+    
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --neon: #00f3ff;       /* Cyberpunk Cyan */
@@ -22,7 +26,7 @@
             color: var(--text-main);
         }
 
-        /* --- HERO SECTION (The Entrance) --- */
+        /* --- HERO SECTION --- */
         .hero {
             padding: 140px 20px 100px;
             text-align: center;
@@ -37,7 +41,7 @@
             max-width: 1000px;
             line-height: 1.05;
             letter-spacing: -2px;
-            /* subtle gradient to make the black look 'richer' */
+            /* Subtle gradient to make the black text feel 'premium' */
             background: linear-gradient(180deg, #000 0%, #444 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -58,10 +62,7 @@
             flex-wrap: wrap;
         }
 
-        /* Primary Button: Direct Path to AI */
-        .btn-primary {
-            background: #000;
-            color: #fff;
+        .btn-primary, .btn-secondary {
             padding: 20px 40px;
             border-radius: 12px;
             text-decoration: none;
@@ -70,6 +71,8 @@
             border: 1px solid transparent;
         }
 
+        /* Primary Button: Launches the AI */
+        .btn-primary { background: #000; color: #fff; }
         .btn-primary:hover { 
             transform: translateY(-4px); 
             background: var(--dark-bg);
@@ -77,22 +80,9 @@
             border-color: var(--neon);
         }
 
-        /* Secondary Button: Path to Video */
-        .btn-secondary {
-            background: var(--accent-gray);
-            color: #000;
-            padding: 20px 40px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
-            border: 1px solid transparent;
-        }
-
-        .btn-secondary:hover { 
-            background: #e8e8ed; 
-            border-color: #d1d1d6;
-        }
+        /* Secondary Button: Opens Canva Brief */
+        .btn-secondary { background: var(--accent-gray); color: #000; }
+        .btn-secondary:hover { background: #e8e8ed; border-color: #d1d1d6; }
 
         /* --- THE ESSENCE SECTION (The Tech) --- */
         .essence-section {
@@ -101,7 +91,6 @@
             color: #fff;
             border-radius: 60px 60px 0 0;
             box-shadow: 0 -20px 50px rgba(0,0,0,0.15);
-            margin-top: 40px;
         }
 
         .essence-header {
@@ -145,32 +134,18 @@
             font-size: 1.1rem;
             margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .card p {
-            color: #8a8a8e;
-            line-height: 1.7;
-            font-size: 1.05rem;
-            margin: 0;
-        }
+        .card p { color: #8a8a8e; line-height: 1.7; font-size: 1.05rem; margin: 0; }
 
-        /* --- ANIMATIONS & DETAILS --- */
+        /* Animation: Scanning effect on hover */
         .scan-line {
-            width: 100%;
-            height: 2px;
+            width: 100%; height: 2px;
             background: linear-gradient(90deg, transparent, var(--neon), transparent);
-            position: absolute;
-            top: 0; left: 0;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none;
         }
 
-        .card:hover .scan-line { 
-            opacity: 0.8;
-            animation: scan 2s linear infinite; 
-        }
+        .card:hover .scan-line { opacity: 0.8; animation: scan 2s linear infinite; }
 
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -191,7 +166,7 @@
         <div class="cta-group">
             <a href="projects/neuro-nod/demo.html" class="btn-primary">Initialize System</a>
             
-            <a href="projects/neuro-nod/brief.mp4" target="_blank" class="btn-secondary">View Concept Brief</a>
+            <a href="https://upaharmishra.my.canva.site/neuro-nod-elite-v10-3-1" target="_blank" class="btn-secondary">View Concept Brief</a>
         </div>
     </section>
 
@@ -209,8 +184,8 @@
         <div class="grid">
             <div class="card">
                 <div class="scan-line"></div>
-                <h3>SAFETY AS A RIGHT, NOT A LUXURY.</h3>
-                <p>Elite safety should not have a paywall. We democratize AI protection, bringing life-saving, privacy-first monitoring to every driver, on every road, regardless of their vehicle.</p>
+                <h3>Trigonometric Euler Estimation</h3>
+                <p>Monitoring head pitch and roll via inverse tangents, ensuring the system remains depth-agnostic across any cabin environment.</p>
             </div>
 
             <div class="card">
@@ -222,7 +197,7 @@
             <div class="card">
                 <div class="scan-line"></div>
                 <h3>Context-Aware Fail-Safe</h3>
-                <p>Automatic transition to Posture-Primary detection (V10.3.1) when optical paths are obstructed by tinted eyewear or low-light conditions.</p>
+                <p>Automatic transition to Posture-Primary detection (V10.3.1) when optical paths are obstructed by tinted eyewear.</p>
             </div>
         </div>
     </section>
